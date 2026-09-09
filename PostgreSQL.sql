@@ -201,14 +201,21 @@
 
 -- -- Product Performance Report
 
--- SELECT p.product_type AS product,COUNT(s.shipment_id) AS shipment_count,SUM(s.monthly_demand_tons) AS total_demand,SUM(s.shipment_volume_tons) AS total_shipment_volume,ROUND(AVG(s.freight_cost_usd),2) AS average_freight_cost,ROUND(AVG(r.current_delay_days),2) AS average_delay,SUM(CASE WHEN s.disruption_event=1 THEN 1 ELSE 0 END) AS disruption_count
--- FROM supply_chain.products p JOIN supply_chain.shipments s ON p.product_id=s.product_id JOIN supply_chain.shipment_risk r ON s.shipment_id=r.shipment_id
+-- SELECT p.product_type AS product,COUNT(s.shipment_id) AS shipment_count,SUM(s.monthly_demand_tons) 
+-- AS total_demand,SUM(s.shipment_volume_tons) AS total_shipment_volume,ROUND(AVG(s.freight_cost_usd),2) 
+-- AS average_freight_cost,ROUND(AVG(r.current_delay_days),2) AS average_delay,SUM(CASE WHEN s.disruption_event=1 THEN 1 ELSE 0 END) 
+-- AS disruption_count FROM supply_chain.products p JOIN supply_chain.shipments s 
+-- ON p.product_id=s.product_id JOIN supply_chain.shipment_risk r ON s.shipment_id=r.shipment_id
 -- GROUP BY p.product_id,p.product_type ORDER BY total_shipment_volume DESC;
 
 -- -- Critical Shipment Report
 
--- SELECT s.shipment_id,s.supplier_id AS supplier,s.country,p.product_type AS product,s.shipment_volume_tons,r.route_risk_score,r.political_risk_index,r.port_congestion_index,r.delay_probability,r.current_delay_days,i.inventory_days,s.freight_cost_usd,s.revenue_impact_usd
--- FROM supply_chain.shipments s JOIN supply_chain.suppliers sup ON s.supplier_id=sup.supplier_id JOIN supply_chain.products p ON s.product_id=p.product_id JOIN supply_chain.shipment_risk r ON s.shipment_id=r.shipment_id JOIN supply_chain.inventory i ON s.shipment_id=i.shipment_id
+-- SELECT s.shipment_id,s.supplier_id AS supplier,s.country,p.product_type AS product,s.shipment_volume_tons,
+-- r.route_risk_score,r.political_risk_index,r.port_congestion_index,r.delay_probability,r.current_delay_days,
+-- i.inventory_days,s.freight_cost_usd,s.revenue_impact_usd
+-- FROM supply_chain.shipments s JOIN supply_chain.suppliers sup ON s.supplier_id=sup.supplier_id 
+-- JOIN supply_chain.products p ON s.product_id=p.product_id JOIN supply_chain.shipment_risk r 
+-- ON s.shipment_id=r.shipment_id JOIN supply_chain.inventory i ON s.shipment_id=i.shipment_id
 -- ORDER BY r.route_risk_score DESC;
 
 -- Task 5: Aggregate Functions & Business Analysis
