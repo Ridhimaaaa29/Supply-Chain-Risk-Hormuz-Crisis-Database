@@ -195,8 +195,11 @@
 
 -- -- Supplier Shipment Report
 
--- SELECT s.supplier_id,s.country,COUNT(s.shipment_id) AS shipment_count,SUM(s.shipment_volume_tons) AS shipment_volume,ROUND(AVG(r.current_delay_days),2) AS average_delay,ROUND(AVG(sr.supplier_reliability),2) AS supplier_reliability,ROUND(SUM(s.freight_cost_usd),2) AS total_freight_cost,ROUND(SUM(s.revenue_impact_usd),2) AS revenue_impact
--- FROM supply_chain.shipments s JOIN supply_chain.shipment_risk r ON s.shipment_id=r.shipment_id JOIN supply_chain.shipment_raw sr ON s.shipment_id=sr.shipment_id
+-- SELECT s.supplier_id,s.country,COUNT(s.shipment_id) AS shipment_count,SUM(s.shipment_volume_tons) 
+-- AS shipment_volume,ROUND(AVG(r.current_delay_days),2) AS average_delay,ROUND(AVG(sr.supplier_reliability),2) 
+-- AS supplier_reliability,ROUND(SUM(s.freight_cost_usd),2) AS total_freight_cost,ROUND(SUM(s.revenue_impact_usd),2) AS revenue_impact
+-- FROM supply_chain.shipments s JOIN supply_chain.shipment_risk r ON s.shipment_id=r.shipment_id 
+-- JOIN supply_chain.shipment_raw sr ON s.shipment_id=sr.shipment_id
 -- GROUP BY s.supplier_id,s.country ORDER BY shipment_volume DESC;
 
 -- -- Product Performance Report
