@@ -5,8 +5,8 @@
 -- CREATE TABLE supply_chain.shipment_raw(
 -- shipment_id VARCHAR(20),
 -- supplier_id VARCHAR(20),
--- country VARCHAR(100),
--- product_type VARCHAR(100),
+-- country VARCHAR(50),
+-- product_type VARCHAR(50),
 -- monthly_demand_tons INTEGER,
 -- shipment_volume_tons INTEGER,
 -- route_risk_score NUMERIC(5,2),
@@ -21,9 +21,13 @@
 -- delay_probability NUMERIC(5,2),
 -- current_delay_days INTEGER,
 -- freight_cost_usd NUMERIC(15,2),
--- revenue_impact_usd NUMERIC(15,2),disruption_event INTEGER);
+-- revenue_impact_usd NUMERIC(15,2),
+-- disruption_event INTEGER);
 
 -- COPY supply_chain.shipment_raw FROM 'C:\Users\USER\Downloads\supply_chain_hormuz_crisis_700.csv' WITH(FORMAT CSV,HEADER TRUE,DELIMITER ',');
+
+-- select * from supply_chain.shipment_raw limit 10;
+-- select count(*) from supply_chain.shipment_raw;
 
 -- Record count
 -- SELECT COUNT(*) AS total_records FROM supply_chain.shipment_raw;
@@ -60,20 +64,14 @@
 -- CREATE TABLE supply_chain.products(product_id SERIAL PRIMARY KEY,product_type VARCHAR(100) NOT NULL UNIQUE);
 
 -- CREATE TABLE supply_chain.shipments(
--- shipment_id VARCHAR(20) PRIMARY KEY,supplier_id VARCHAR(20) NOT NULL,product_id INTEGER NOT NULL,country VARCHAR(100) NOT NULL,
--- monthly_demand_tons INTEGER NOT NULL,shipment_volume_tons INTEGER NOT NULL,transit_time_days INTEGER NOT NULL,freight_cost_usd 
--- NUMERIC(15,2) NOT NULL,revenue_impact_usd NUMERIC(15,2) NOT NULL,disruption_event INTEGER NOT NULL,
--- FOREIGN KEY(supplier_id) REFERENCES supply_chain.suppliers(supplier_id),FOREIGN KEY(product_id) 
--- REFERENCES supply_chain.products(product_id), CHECK(monthly_demand_tons>=0),CHECK(shipment_volume_tons>0),CHECK(transit_time_days>=0),
--- CHECK(freight_cost_usd>=0),CHECK(revenue_impact_usd>=0),CHECK(disruption_event IN(0,1)));
+-- shipment_id VARCHAR(20) PRIMARY KEY,supplier_id VARCHAR(20) NOT NULL,product_id INTEGER NOT NULL,country VARCHAR(100) NOT NULL,monthly_demand_tons INTEGER NOT NULL,shipment_volume_tons INTEGER NOT NULL,transit_time_days INTEGER NOT NULL,freight_cost_usd NUMERIC(15,2) NOT NULL,revenue_impact_usd NUMERIC(15,2) NOT NULL,disruption_event INTEGER NOT NULL,
+-- FOREIGN KEY(supplier_id) REFERENCES supply_chain.suppliers(supplier_id),FOREIGN KEY(product_id) REFERENCES supply_chain.products(product_id),
+-- CHECK(monthly_demand_tons>=0),CHECK(shipment_volume_tons>0),CHECK(transit_time_days>=0),CHECK(freight_cost_usd>=0),CHECK(revenue_impact_usd>=0),CHECK(disruption_event IN(0,1)));
 
 -- CREATE TABLE supply_chain.shipment_risk(
--- shipment_id VARCHAR(20) PRIMARY KEY,route_risk_score NUMERIC(5,2) NOT NULL,historical_delay_days INTEGER NOT NULL,
--- fuel_price_usd NUMERIC(10,2) NOT NULL,political_risk_index NUMERIC(5,2) NOT NULL,
--- port_congestion_index NUMERIC(5,2) NOT NULL,delay_probability NUMERIC(5,2) NOT NULL,current_delay_days INTEGER NOT NULL,
+-- shipment_id VARCHAR(20) PRIMARY KEY,route_risk_score NUMERIC(5,2) NOT NULL,historical_delay_days INTEGER NOT NULL,fuel_price_usd NUMERIC(10,2) NOT NULL,political_risk_index NUMERIC(5,2) NOT NULL,port_congestion_index NUMERIC(5,2) NOT NULL,delay_probability NUMERIC(5,2) NOT NULL,current_delay_days INTEGER NOT NULL,
 -- FOREIGN KEY(shipment_id) REFERENCES supply_chain.shipments(shipment_id),
--- CHECK(route_risk_score>=0),CHECK(historical_delay_days>=0),CHECK(fuel_price_usd>=0),
--- CHECK(political_risk_index>=0),CHECK(port_congestion_index>=0),CHECK(delay_probability BETWEEN 0 AND 1),CHECK(current_delay_days>=0));
+-- CHECK(route_risk_score>=0),CHECK(historical_delay_days>=0),CHECK(fuel_price_usd>=0),CHECK(political_risk_index>=0),CHECK(port_congestion_index>=0),CHECK(delay_probability BETWEEN 0 AND 1),CHECK(current_delay_days>=0));
 
 -- CREATE TABLE supply_chain.inventory(
 -- shipment_id VARCHAR(20) PRIMARY KEY,inventory_days INTEGER NOT NULL,alternative_supplier_count INTEGER NOT NULL,
@@ -82,17 +80,12 @@
 -- INSERT INTO supply_chain.products(product_type) SELECT DISTINCT product_type FROM supply_chain.shipment_raw;
 -- INSERT INTO supply_chain.suppliers(supplier_id) SELECT DISTINCT supplier_id FROM supply_chain.shipment_raw;
 
--- INSERT INTO supply_chain.shipments(shipment_id,supplier_id,product_id,country,monthly_demand_tons,shipment_volume_tons,
--- transit_time_days,freight_cost_usd,revenue_impact_usd,disruption_event)
--- SELECT r.shipment_id,r.supplier_id,p.product_id,r.country,r.monthly_demand_tons,r.shipment_volume_tons,
--- r.transit_time_days,r.freight_cost_usd,r.revenue_impact_usd,r.disruption_event
--- FROM supply_chain.shipment_raw r JOIN supply_chain.products p ON r.product_type=p.product_type 
--- WHERE r.revenue_impact_usd>=0;
+-- INSERT INTO supply_chain.shipments(shipment_id,supplier_id,product_id,country,monthly_demand_tons,shipment_volume_tons,transit_time_days,freight_cost_usd,revenue_impact_usd,disruption_event)
+-- SELECT r.shipment_id,r.supplier_id,p.product_id,r.country,r.monthly_demand_tons,r.shipment_volume_tons,r.transit_time_days,r.freight_cost_usd,r.revenue_impact_usd,r.disruption_event
+-- FROM supply_chain.shipment_raw r JOIN supply_chain.products p ON r.product_type=p.product_type WHERE r.revenue_impact_usd>=0;
 
--- INSERT INTO supply_chain.shipment_risk(shipment_id,route_risk_score,historical_delay_days,
--- fuel_price_usd,political_risk_index, port_congestion_index,delay_probability,current_delay_days)
--- SELECT r.shipment_id,r.route_risk_score,r.historical_delay_days,r.fuel_price_usd,
--- r.political_risk_index,r.port_congestion_index,r.delay_probability,r.current_delay_days
+-- INSERT INTO supply_chain.shipment_risk(shipment_id,route_risk_score,historical_delay_days,fuel_price_usd,political_risk_index,port_congestion_index,delay_probability,current_delay_days)
+-- SELECT r.shipment_id,r.route_risk_score,r.historical_delay_days,r.fuel_price_usd,r.political_risk_index,r.port_congestion_index,r.delay_probability,r.current_delay_days
 -- FROM supply_chain.shipment_raw r JOIN supply_chain.shipments s ON r.shipment_id=s.shipment_id;
 
 -- INSERT INTO supply_chain.inventory(shipment_id,inventory_days,alternative_supplier_count)
@@ -112,8 +105,7 @@
 -- ALTER TABLE supply_chain.shipments ADD COLUMN IF NOT EXISTS risk_classification VARCHAR(20);
 
 -- Update delayed shipments
--- UPDATE supply_chain.shipments s SET shipment_status=CASE WHEN r.current_delay_days=0 
--- THEN 'ON_TIME' WHEN r.current_delay_days<=5 THEN 'DELAYED' ELSE 'SEVERELY_DELAYED' END
+-- UPDATE supply_chain.shipments s SET shipment_status=CASE WHEN r.current_delay_days=0 THEN 'ON_TIME' WHEN r.current_delay_days<=5 THEN 'DELAYED' ELSE 'SEVERELY_DELAYED' END
 -- FROM supply_chain.shipment_risk r WHERE s.shipment_id=r.shipment_id;
 
 -- Update risk classification
@@ -122,15 +114,13 @@
 -- THEN 'CRITICAL' WHEN r.route_risk_score>=60 AND r.delay_probability>=0.50 
 -- AND r.current_delay_days>=5 THEN 'HIGH' WHEN r.route_risk_score>=40 
 -- OR r.delay_probability>=0.30 THEN 'MEDIUM' ELSE 'LOW' END
--- FROM supply_chain.shipment_risk r JOIN supply_chain.inventory i 
--- ON r.shipment_id=i.shipment_id WHERE s.shipment_id=r.shipment_id;
+-- FROM supply_chain.shipment_risk r JOIN supply_chain.inventory i ON r.shipment_id=i.shipment_id WHERE s.shipment_id=r.shipment_id;
 
 -- Insert supplier
 -- INSERT INTO supply_chain.suppliers(supplier_id) VALUES('SUP_TEST');
 
 -- Insert shipment
--- INSERT INTO supply_chain.shipments(shipment_id,supplier_id,product_id,country,monthly_demand_tons,
--- shipment_volume_tons,transit_time_days,freight_cost_usd,revenue_impact_usd,disruption_event,shipment_status,risk_classification)
+-- INSERT INTO supply_chain.shipments(shipment_id,supplier_id,product_id,country,monthly_demand_tons,shipment_volume_tons,transit_time_days,freight_cost_usd,revenue_impact_usd,disruption_event,shipment_status,risk_classification)
 -- VALUES('SHP_TEST','SUP_TEST',1,'India',1000,500,10,5000.00,10000.00,0,'ON_TIME','LOW');
 
 -- Update freight cost
@@ -148,8 +138,7 @@
 -- BEGIN;
 -- UPDATE supply_chain.shipments SET shipment_status='DELAYED' WHERE shipment_id='SHP0001';
 -- UPDATE supply_chain.shipment_risk SET current_delay_days=current_delay_days+1 WHERE shipment_id='SHP0001';
--- SELECT s.shipment_id,s.shipment_status,r.current_delay_days FROM supply_chain.shipments s 
--- JOIN supply_chain.shipment_risk r ON s.shipment_id=r.shipment_id WHERE s.shipment_id='SHP0001';
+-- SELECT s.shipment_id,s.shipment_status,r.current_delay_days FROM supply_chain.shipments s JOIN supply_chain.shipment_risk r ON s.shipment_id=r.shipment_id WHERE s.shipment_id='SHP0001';
 -- COMMIT;
 
 -- Failed Transaction
@@ -195,30 +184,20 @@
 
 -- -- Supplier Shipment Report
 
--- SELECT s.supplier_id,s.country,COUNT(s.shipment_id) AS shipment_count,SUM(s.shipment_volume_tons) 
--- AS shipment_volume,ROUND(AVG(r.current_delay_days),2) AS average_delay,ROUND(AVG(sr.supplier_reliability),2) 
--- AS supplier_reliability,ROUND(SUM(s.freight_cost_usd),2) AS total_freight_cost,ROUND(SUM(s.revenue_impact_usd),2) AS revenue_impact
--- FROM supply_chain.shipments s JOIN supply_chain.shipment_risk r ON s.shipment_id=r.shipment_id 
--- JOIN supply_chain.shipment_raw sr ON s.shipment_id=sr.shipment_id
+-- SELECT s.supplier_id,s.country,COUNT(s.shipment_id) AS shipment_count,SUM(s.shipment_volume_tons) AS shipment_volume,ROUND(AVG(r.current_delay_days),2) AS average_delay,ROUND(AVG(sr.supplier_reliability),2) AS supplier_reliability,ROUND(SUM(s.freight_cost_usd),2) AS total_freight_cost,ROUND(SUM(s.revenue_impact_usd),2) AS revenue_impact
+-- FROM supply_chain.shipments s JOIN supply_chain.shipment_risk r ON s.shipment_id=r.shipment_id JOIN supply_chain.shipment_raw sr ON s.shipment_id=sr.shipment_id
 -- GROUP BY s.supplier_id,s.country ORDER BY shipment_volume DESC;
 
 -- -- Product Performance Report
 
--- SELECT p.product_type AS product,COUNT(s.shipment_id) AS shipment_count,SUM(s.monthly_demand_tons) 
--- AS total_demand,SUM(s.shipment_volume_tons) AS total_shipment_volume,ROUND(AVG(s.freight_cost_usd),2) 
--- AS average_freight_cost,ROUND(AVG(r.current_delay_days),2) AS average_delay,SUM(CASE WHEN s.disruption_event=1 THEN 1 ELSE 0 END) 
--- AS disruption_count FROM supply_chain.products p JOIN supply_chain.shipments s 
--- ON p.product_id=s.product_id JOIN supply_chain.shipment_risk r ON s.shipment_id=r.shipment_id
+-- SELECT p.product_type AS product,COUNT(s.shipment_id) AS shipment_count,SUM(s.monthly_demand_tons) AS total_demand,SUM(s.shipment_volume_tons) AS total_shipment_volume,ROUND(AVG(s.freight_cost_usd),2) AS average_freight_cost,ROUND(AVG(r.current_delay_days),2) AS average_delay,SUM(CASE WHEN s.disruption_event=1 THEN 1 ELSE 0 END) AS disruption_count
+-- FROM supply_chain.products p JOIN supply_chain.shipments s ON p.product_id=s.product_id JOIN supply_chain.shipment_risk r ON s.shipment_id=r.shipment_id
 -- GROUP BY p.product_id,p.product_type ORDER BY total_shipment_volume DESC;
 
 -- -- Critical Shipment Report
 
--- SELECT s.shipment_id,s.supplier_id AS supplier,s.country,p.product_type AS product,s.shipment_volume_tons,
--- r.route_risk_score,r.political_risk_index,r.port_congestion_index,r.delay_probability,r.current_delay_days,
--- i.inventory_days,s.freight_cost_usd,s.revenue_impact_usd
--- FROM supply_chain.shipments s JOIN supply_chain.suppliers sup ON s.supplier_id=sup.supplier_id 
--- JOIN supply_chain.products p ON s.product_id=p.product_id JOIN supply_chain.shipment_risk r 
--- ON s.shipment_id=r.shipment_id JOIN supply_chain.inventory i ON s.shipment_id=i.shipment_id
+-- SELECT s.shipment_id,s.supplier_id AS supplier,s.country,p.product_type AS product,s.shipment_volume_tons,r.route_risk_score,r.political_risk_index,r.port_congestion_index,r.delay_probability,r.current_delay_days,i.inventory_days,s.freight_cost_usd,s.revenue_impact_usd
+-- FROM supply_chain.shipments s JOIN supply_chain.suppliers sup ON s.supplier_id=sup.supplier_id JOIN supply_chain.products p ON s.product_id=p.product_id JOIN supply_chain.shipment_risk r ON s.shipment_id=r.shipment_id JOIN supply_chain.inventory i ON s.shipment_id=i.shipment_id
 -- ORDER BY r.route_risk_score DESC;
 
 -- Task 5: Aggregate Functions & Business Analysis
@@ -402,3 +381,245 @@
 
 -- SELECT shipment_id,CAST((shipment_volume_tons::NUMERIC/monthly_demand_tons)*100 AS INTEGER) AS volume_percentage
 -- FROM supply_chain.shipments WHERE monthly_demand_tons>0;
+
+-- Task 7: Views & Reusable Reporting
+
+-- View 1: Supplier Performance
+
+-- CREATE OR REPLACE VIEW supply_chain.vw_supplier_performance AS
+-- SELECT s.supplier_id AS supplier,s.country, COUNT(s.shipment_id) AS shipment_count,
+-- SUM(s.shipment_volume_tons) AS total_shipment_volume, ROUND(AVG(r.current_delay_days),2)
+-- AS average_delay, ROUND(AVG(sr.supplier_reliability),2) AS average_reliability,
+-- ROUND(SUM(s.freight_cost_usd),2) AS total_freight_cost, ROUND(SUM(s.revenue_impact_usd),2) 
+-- AS total_revenue_impact FROM supply_chain.shipments s JOIN supply_chain.shipment_risk r 
+-- ON s.shipment_id=r.shipment_id JOIN supply_chain.shipment_raw sr 
+-- ON s.shipment_id=sr.shipment_id GROUP BY s.supplier_id,s.country;
+
+-- View 2: Shipment Risk
+
+-- CREATE OR REPLACE VIEW supply_chain.vw_shipment_risk AS
+-- SELECT s.shipment_id, s.supplier_id AS supplier, s.country, p.product_type 
+-- AS product, r.route_risk_score AS route_risk, r.political_risk_index 
+-- AS political_risk, r.port_congestion_index AS port_congestion, r.delay_probability, r.current_delay_days 
+-- AS current_delay, i.inventory_days
+-- FROM supply_chain.shipments s
+-- JOIN supply_chain.products p ON s.product_id=p.product_id
+-- JOIN supply_chain.shipment_risk r ON s.shipment_id=r.shipment_id
+-- JOIN supply_chain.inventory i ON s.shipment_id=i.shipment_id;
+
+-- View 3: Critical Shipments
+
+-- CREATE OR REPLACE VIEW supply_chain.vw_critical_shipments AS
+-- SELECT shipment_id,supplier,country,product,route_risk,political_risk,
+-- port_congestion,delay_probability,current_delay,inventory_days
+-- FROM supply_chain.vw_shipment_risk
+-- WHERE route_risk>=8
+-- AND delay_probability>=0.70
+-- AND current_delay>=10
+-- AND inventory_days<=15;
+
+
+-- Query 1: Suppliers with low reliability
+
+-- SELECT supplier,country,average_reliability,shipment_count
+-- FROM supply_chain.vw_supplier_performance
+-- WHERE average_reliability<0.70
+-- ORDER BY average_reliability;
+
+-- Query 2: Supplier-country combinations with high revenue impact
+
+-- SELECT *
+-- FROM supply_chain.vw_supplier_performance
+-- WHERE total_revenue_impact>200000
+-- ORDER BY total_revenue_impact DESC;
+
+-- Query 3: Countries with more than 10 high-risk shipments
+
+-- SELECT country,COUNT(*) AS high_risk_shipments
+-- FROM supply_chain.vw_shipment_risk
+-- WHERE route_risk>=6
+-- AND delay_probability>=0.50
+-- GROUP BY country
+-- HAVING COUNT(*)>10
+-- ORDER BY high_risk_shipments DESC;
+
+-- Query 4: Shipments with low inventory and significant delay
+
+-- SELECT shipment_id,supplier,country,product,current_delay,inventory_days
+-- FROM supply_chain.vw_shipment_risk
+-- WHERE current_delay>=5
+-- AND inventory_days<=20
+-- ORDER BY current_delay DESC,inventory_days;
+
+-- Query 5: Critical shipments grouped by product
+
+-- SELECT shipment_id,supplier,country,product,route_risk,
+-- delay_probability,current_delay,inventory_days
+-- FROM supply_chain.vw_critical_shipments
+-- ORDER BY route_risk DESC,current_delay DESC;
+
+
+
+-- SELECT s.shipment_id,s.supplier_id,s.country,p.product_type,
+-- r.route_risk_score,r.delay_probability,r.current_delay_days,i.inventory_days
+-- FROM supply_chain.shipments s
+-- JOIN supply_chain.products p ON s.product_id=p.product_id
+-- JOIN supply_chain.shipment_risk r ON s.shipment_id=r.shipment_id
+-- JOIN supply_chain.inventory i ON s.shipment_id=i.shipment_id
+-- WHERE r.route_risk_score>=8
+-- AND r.delay_probability>=0.70
+-- AND r.current_delay_days>=10
+-- AND i.inventory_days<=15
+-- ORDER BY r.route_risk_score DESC;
+
+-- Task 8: Functions, Stored Procedures & Triggers
+
+-- A. Function — Risk Classification
+
+-- CREATE OR REPLACE FUNCTION supply_chain.get_risk_classification(
+-- p_route_risk NUMERIC, p_delay_probability NUMERIC,
+-- p_current_delay INTEGER, p_inventory_days INTEGER)
+-- RETURNS VARCHAR LANGUAGE plpgsql AS $$ BEGIN
+-- IF p_route_risk>=80 AND p_delay_probability>=0.70 AND p_current_delay>=10 AND p_inventory_days<=15 THEN
+-- RETURN 'CRITICAL';
+-- ELSIF p_route_risk>=60 AND p_delay_probability>=0.50 AND p_current_delay>=5 THEN
+-- RETURN 'HIGH';
+-- ELSIF p_route_risk>=40 OR p_delay_probability>=0.30 THEN
+-- RETURN 'MEDIUM';
+-- ELSE
+-- RETURN 'LOW';
+-- END IF;
+-- END;
+-- $$;
+
+-- SELECT r.shipment_id,
+-- supply_chain.get_risk_classification(r.route_risk_score,r.delay_probability,r.current_delay_days,i.inventory_days) AS risk_classification
+-- FROM supply_chain.shipment_risk r
+-- JOIN supply_chain.inventory i ON r.shipment_id=i.shipment_id;
+
+-- B. Function — Freight Risk Score
+
+-- CREATE OR REPLACE FUNCTION supply_chain.calculate_freight_risk(
+-- p_shipment_volume NUMERIC, p_fuel_price NUMERIC, p_route_risk NUMERIC)
+-- RETURNS NUMERIC
+-- LANGUAGE plpgsql AS $$
+-- BEGIN
+-- RETURN ROUND((p_shipment_volume*p_fuel_price*p_route_risk)/100,2);
+-- END;
+-- $$;
+
+-- SELECT s.shipment_id, s.shipment_volume_tons, r.fuel_price_usd, r.route_risk_score,
+-- supply_chain.calculate_freight_risk(s.shipment_volume_tons,r.fuel_price_usd,r.route_risk_score) AS freight_risk_score
+-- FROM supply_chain.shipments s JOIN supply_chain.shipment_risk r ON s.shipment_id=r.shipment_id
+-- ORDER BY freight_risk_score DESC;
+
+-- C. Stored Procedure
+
+-- CREATE OR REPLACE PROCEDURE supply_chain.update_risk_classification(p_shipment_id VARCHAR)
+-- LANGUAGE plpgsql
+-- AS $$
+-- DECLARE
+-- v_risk VARCHAR;
+-- BEGIN
+-- SELECT supply_chain.get_risk_classification(r.route_risk_score,r.delay_probability,r.current_delay_days,i.inventory_days)
+-- INTO v_risk
+-- FROM supply_chain.shipment_risk r
+-- JOIN supply_chain.inventory i ON r.shipment_id=i.shipment_id
+-- WHERE r.shipment_id=p_shipment_id;
+
+-- UPDATE supply_chain.shipments
+-- SET risk_classification=v_risk
+-- WHERE shipment_id=p_shipment_id;
+-- END;
+-- $$;
+
+-- CALL supply_chain.update_risk_classification('SHP0001');
+
+-- SELECT shipment_id,risk_classification
+-- FROM supply_chain.shipments
+-- WHERE shipment_id='SHP0001';
+
+-- D. Audit Trigger
+
+-- CREATE TABLE supply_chain.shipment_audit(
+-- audit_id SERIAL PRIMARY KEY,
+-- shipment_id VARCHAR(20),
+-- old_value TEXT,
+-- new_value TEXT,
+-- operation VARCHAR(20),
+-- changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- );
+
+-- CREATE OR REPLACE FUNCTION supply_chain.audit_shipment_update()
+-- RETURNS TRIGGER
+-- LANGUAGE plpgsql
+-- AS $$
+-- BEGIN
+-- INSERT INTO supply_chain.shipment_audit(shipment_id,old_value,new_value,operation)
+-- VALUES(OLD.shipment_id,OLD.shipment_volume_tons::TEXT,NEW.shipment_volume_tons::TEXT,TG_OP);
+-- RETURN NEW;
+-- END;
+-- $$;
+-- CREATE TRIGGER trg_audit_shipment_update
+-- AFTER UPDATE OF shipment_volume_tons
+-- ON supply_chain.shipments
+-- FOR EACH ROW
+-- EXECUTE FUNCTION supply_chain.audit_shipment_update();
+
+-- UPDATE supply_chain.shipments
+-- SET shipment_volume_tons=shipment_volume_tons+10
+-- WHERE shipment_id='SHP0001';
+
+-- SELECT *
+-- FROM supply_chain.shipment_audit
+-- ORDER BY changed_at DESC;
+
+-- E. Validation Trigger
+
+-- CREATE OR REPLACE FUNCTION supply_chain.validate_shipment()
+-- RETURNS TRIGGER
+-- LANGUAGE plpgsql
+-- AS $$
+-- BEGIN
+-- IF NEW.shipment_volume_tons<0 THEN
+-- RAISE EXCEPTION 'Shipment volume cannot be negative';
+-- END IF;
+
+-- IF NEW.freight_cost_usd<0 THEN
+-- RAISE EXCEPTION 'Freight cost cannot be negative';
+-- END IF;
+
+-- RETURN NEW;
+-- END;
+-- $$;
+
+-- CREATE OR REPLACE FUNCTION supply_chain.validate_shipment_risk()
+-- RETURNS TRIGGER
+-- LANGUAGE plpgsql
+-- AS $$
+-- BEGIN
+-- IF NEW.delay_probability NOT BETWEEN 0 AND 1 THEN
+-- RAISE EXCEPTION 'Delay probability must be between 0 and 1';
+-- END IF;
+
+-- RETURN NEW;
+-- END;
+-- $$;
+
+-- CREATE TRIGGER trg_validate_shipment
+-- BEFORE INSERT OR UPDATE ON supply_chain.shipments
+-- FOR EACH ROW
+-- EXECUTE FUNCTION supply_chain.validate_shipment();
+
+-- CREATE TRIGGER trg_validate_shipment_risk
+-- BEFORE INSERT OR UPDATE ON supply_chain.shipment_risk
+-- FOR EACH ROW
+-- EXECUTE FUNCTION supply_chain.validate_shipment_risk();
+
+-- UPDATE supply_chain.shipments
+-- SET shipment_volume_tons=-100
+-- WHERE shipment_id='SHP0001';
+
+-- UPDATE supply_chain.shipment_risk
+-- SET delay_probability=1.5
+-- WHERE shipment_id='SHP0001';
