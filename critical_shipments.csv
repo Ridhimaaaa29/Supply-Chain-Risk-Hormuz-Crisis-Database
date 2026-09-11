@@ -1,0 +1,6 @@
+shipment_id,supplier,country,product,route_risk,political_risk,port_congestion,delay_probability,current_delay,inventory_days
+SHP0209,SUP039,Oman,Fertilizer,8.88,5.83,5.12,0.70,10,12
+SHP0218,SUP002,Saudi Arabia,Crude Oil,10.00,7.46,5.92,0.79,36,15
+SHP0295,SUP024,Iraq,LNG,8.47,9.40,5.85,0.78,15,15
+SHP0308,SUP035,UAE,Electronics,9.91,1.65,9.52,0.73,29,9
+SHP0611,SUP019,Germany,Fertilizer,9.23,6.65,7.47,0.71,29,14
