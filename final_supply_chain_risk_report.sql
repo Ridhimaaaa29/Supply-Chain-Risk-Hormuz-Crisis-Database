@@ -36,5 +36,9 @@ FROM supply_chain.vw_shipment_risk v
 JOIN supply_chain.shipments s ON v.shipment_id=s.shipment_id
 JOIN supply_chain.shipment_risk r ON v.shipment_id=r.shipment_id
 JOIN supply_chain.shipment_raw sr ON v.shipment_id=sr.shipment_id
+WHERE v.shipment_id IN(
+SELECT shipment_id
+FROM supply_chain.vw_critical_shipments
+)
 ORDER BY "Supply Chain Risk Score" DESC
 LIMIT 20;
